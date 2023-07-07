@@ -1,4 +1,3 @@
-
 CREATE DATABASE investigation_july_2023_db;
 
 use investigation_july_2023_db;
@@ -23,6 +22,31 @@ ALTER COLUMN Properties SET DEFAULT '{}';
 
 # INSERT INTO your_table (event_datetime)
 # VALUES (STR_TO_DATE('25/03/2022 13:35:00', '%d/%m/%Y %H:%i:%s'));
+
+
+
+
+LOAD DATA INFILE 'C:\\MySQL_task\\log_00000.csv'
+INTO TABLE DetectiveCases
+FIELDS TERMINATED BY ','
+(Time_stamp)
+SET Time_stamp = STR_TO_DATE(@Time_stamp, '%d/%m/%Y %H:%i'); # '%d/%m/%Y %H:%i'
+
+
+SELECT STR_TO_DATE('01/01/2022 0:06', '%d/%m/%Y %H:%i') AS formatted_datetime;
+
+
+
+LOAD DATA INFILE 'C:\\MySQL_task\\log_00001.csv'
+INTO TABLE DetectiveCases
+FIELDS TERMINATED BY ',';
+
+LOAD DATA INFILE 'C:\\MySQL_task\\log_00002.csv'
+INTO TABLE DetectiveCases
+FIELDS TERMINATED BY ',';
+
+select *
+from DetectiveCases;
 
 
 
