@@ -1,0 +1,28 @@
+
+CREATE DATABASE investigation_july_2023_db;
+
+use investigation_july_2023_db;
+
+-- show variables like "secure_file_priv"; 
+-- show variables like "local_infile";
+-- set global local_infile = 1;
+
+
+CREATE TABLE DetectiveCases (
+	Time_stamp datetime,
+    EventType VARCHAR(30),
+    DetectiveId VARCHAR(28) ,
+    CaseId VARCHAR(28),
+    Properties json
+);
+
+drop table DetectiveCases;
+
+ALTER TABLE DetectiveCases
+ALTER COLUMN Properties SET DEFAULT '{}';
+
+# INSERT INTO your_table (event_datetime)
+# VALUES (STR_TO_DATE('25/03/2022 13:35:00', '%d/%m/%Y %H:%i:%s'));
+
+
+
