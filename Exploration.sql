@@ -40,7 +40,7 @@ HAVING MAX(Time_stamp) = (SELECT MAX(Time_stamp)
 						  GROUP BY CaseId);
 
 
-# Let's to for a different approach - Using join + nested subqeury
+# Let's to for a different approach - Using inner join + nested subqeury
 	
 SELECT DetectiveC.CaseId, DetectiveC.DetectiveId
 FROM DetectiveCases DetectiveC
