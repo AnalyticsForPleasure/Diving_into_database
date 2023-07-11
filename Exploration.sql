@@ -53,4 +53,21 @@ ON DetectiveC.CaseId = sub.CaseId AND
 WHERE DetectiveC.EventType = 'CaseSolved'; # The 'WHERE' here is a continuation for the outer query 
 
 
+TODO : Need to check this query  ( Contain 3 tables )
+# Top 5 Detective_IDs who have earned the most money during 2022
+
+SELECT DetectiveC.CaseId, DetectiveC.DetectiveId, DetectiveC.Properties
+FROM ( SELECT CaseId, DetectiveId, SUM(Properties) AS Total_Bounty
+	   FROM DetectiveCases
+       WHERE EventType = 'CaseOpened' # EventType = 'CaseSolved' OR 
+       GROUP BY CaseId, DetectiveId ) DetectiveC
+JOIN (SELECT CaseId, MAX(Time_stamp) AS max_timestamp
+      FROM DetectiveCases
+      WHERE EventType = 'CaseSolved'
+      GROUP BY CaseId) sub
+ON DetectiveC.CaseId = sub.CaseId
+WHERE DetectiveC.DetectiveId IS NOT NULL
+AND DetectiveC.Total_Bounty > 0
+ORDER BY DetectiveC.Total_Bounty DESC
+LIMIT 5;
                           
