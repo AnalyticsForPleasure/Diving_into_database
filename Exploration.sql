@@ -1,7 +1,8 @@
+###############################################################################################
 # Path 1: Convertion table number 1
 
-SELECT CaseId, Properties
-FROM DetectiveCases
+SELECT CaseId, Properties 
+FROM DetectiveCases 
 WHERE EventType = 'CaseOpened';
 
 # Path 2: Convertion table number 2
@@ -9,10 +10,7 @@ WHERE EventType = 'CaseOpened';
 Select CaseId,  EventType
 from DetectiveCases
 WHERE EventType = 'CaseSolved';
-
-
 #####################################################################################################
-
 
 # Finding the caseid which have been solved at the last transaction - by adding the max over the time_stamp 
 # In other words, the last transaction recorded for that case is 'CaseSolved'.
@@ -25,35 +23,40 @@ HAVING MAX(Time_stamp) = (SELECT MAX(Time_stamp)
 						  FROM DetectiveCases
 						  WHERE EventType = 'CaseSolved'
 						  GROUP BY CaseId);
-                      
 
-### Here I used the same subquery I wrote -The only thing I added  is the output "DetectiveId" +  Entered 'DetectiveId' into the group of the outer query
 
-	
+
+#####################################################################################################
+
+### Here I used the same subquery I wrote -The only thing I added  is the output "DetectiveId" + Entered 'DetectiveId' into the group of the outer query
+
+# First approach : Retrieving CaseId, DetectiveId - by using subquary + Having  
+
 SELECT CaseId, DetectiveId
 FROM DetectiveCases
 WHERE EventType = 'CaseSolved'
-GROUP BY CaseId , DetectiveId # added DetectiveId
+GROUP BY CaseId , DetectiveId
 HAVING MAX(Time_stamp) = (SELECT MAX(Time_stamp)
 						  FROM DetectiveCases
 						  WHERE EventType = 'CaseSolved'
 						  GROUP BY CaseId);
+                          
+#####################################################################################################     
 
+# Second approach : Retrieving CaseId, DetectiveId - by using Inner Join  + Where 
 
-# Let's to for a different approach - Using inner join + nested subqeury
-	
 SELECT DetectiveC.CaseId, DetectiveC.DetectiveId
-FROM DetectiveCases DetectiveC
+FROM DetectiveCases as DetectiveC
 JOIN (SELECT CaseId, MAX(Time_stamp) AS max_timestamp
 	  FROM DetectiveCases
 	  WHERE EventType = 'CaseSolved'
 	  GROUP BY CaseId) sub 
 ON DetectiveC.CaseId = sub.CaseId AND
- DetectiveC.Time_stamp = sub.max_timestamp # This line is used  - In order to find the last line of the time_stamp for a specific CaseId
+ DetectiveC.Time_stamp = sub.max_timestamp # In order to find the last line of the time_stamp for a specific CaseId
 WHERE DetectiveC.EventType = 'CaseSolved'; # The 'WHERE' here is a continuation for the outer query 
 
 
-TODO : Need to check this query  ( Contain 3 tables )
+#####################################################################################################
 # Top 5 Detective_IDs who have earned the most money during 2022
 
 SELECT DetectiveC.CaseId, DetectiveC.DetectiveId, DetectiveC.Properties
@@ -68,6 +71,15 @@ JOIN (SELECT CaseId, MAX(Time_stamp) AS max_timestamp
 ON DetectiveC.CaseId = sub.CaseId
 WHERE DetectiveC.DetectiveId IS NOT NULL
 AND DetectiveC.Total_Bounty > 0
-ORDER BY DetectiveC.Total_Bounty DESC
+ORDER BY DetectiveC.Total_Bounty DESC  # The "Order by" line is for selecting the top 5 highest bounties given 
 LIMIT 5;
-                          
+
+
+
+
+
+
+
+
+
+
