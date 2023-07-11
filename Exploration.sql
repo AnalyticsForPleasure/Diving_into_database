@@ -27,16 +27,17 @@ HAVING MAX(Time_stamp) = (SELECT MAX(Time_stamp)
 						  GROUP BY CaseId);
                       
 
-### Here I used the same subquery I wrote -The only I added  is the output "DetectiveId"
-                          
-SELECT CaseId, DetectiveId
+### Here I used the same subquery I wrote -The only thing I added  is the output "DetectiveId" +  Entered 'DetectiveId' into the group of the outer query
+
+	SELECT CaseId, DetectiveId
 FROM DetectiveCases
 WHERE EventType = 'CaseSolved'
-GROUP BY CaseId
+GROUP BY CaseId , DetectiveId # added DetectiveId
 HAVING MAX(Time_stamp) = (SELECT MAX(Time_stamp)
 						  FROM DetectiveCases
 						  WHERE EventType = 'CaseSolved'
-						  GROUP BY Case_id);
+						  GROUP BY CaseId);
+
 
 
                           
