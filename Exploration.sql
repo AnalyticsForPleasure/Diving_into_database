@@ -75,7 +75,45 @@ ORDER BY DetectiveC.Total_Bounty DESC  # The "Order by" line is for selecting th
 LIMIT 5;
 
 
+#############################################################################################################
 
+# In the next code here blow I created 2 temprary tables in order to solve the same question.
+# The first temporary table will be called temp_total_bounty.
+# The Second temporary table will be called temp_last_transaction.
+Afterwards, I will present the final query using the temporary tables which I  built.	
+	
+
+## Path 1 :  Create a temporary table to store the total bounty earned for each detective on each case
+	
+CREATE TEMPORARY TABLE temp_total_bounty AS
+SELECT CaseId, DetectiveId, SUM(Properties) AS Total_Bounty
+FROM DetectiveCases
+WHERE EventType IN ('CaseOpened') # 'CaseSolved'
+GROUP BY CaseId, DetectiveId;
+
+
+## Path 2 : Create a temporary table to store the last transaction (CaseSolved) for each case
+	
+CREATE TEMPORARY TABLE temp_last_transaction AS
+SELECT temp_bounty.CaseId, temp_bounty.DetectiveId, temp_bounty.SUM(Properties)
+FROM temp_total_bounty temp_bounty
+JOIN (SELECT CaseId, MAX(Time_stamp) AS max_timestamp
+    FROM DetectiveCases
+    WHERE EventType = 'CaseSolved'
+    GROUP BY CaseId) sub 
+ON temp_bounty.CaseId = sub.CaseId 
+AND temp_bounty.Total_Bounty > 0;
+
+
+## Path 3 : Retrieve the top 5 Detective IDs with the highest total bounty on each 'CaseSolved'
+SELECT CaseId, DetectiveId, Total_Bounty
+FROM temp_last_transaction
+ORDER BY Total_Bounty DESC
+LIMIT 5;
+
+## Path 4 : Dropping the temporary tables
+DROP TABLE IF EXISTS temp_total_bounty;
+DROP TABLE IF EXISTS temp_last_transaction;
 
 
 
