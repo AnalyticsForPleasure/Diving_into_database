@@ -77,7 +77,7 @@ LIMIT 5;
 
 #############################################################################################################
 
-# In the next code here blow I created 2 temprary tables in order to solve the same question.
+# In the next code here below I created 2 temprary tables in order to solve the same question.
 # The first temporary table will be called temp_total_bounty.
 # The Second temporary table will be called temp_last_transaction.
 Afterwards, I will present the final query using the temporary tables which I  built.	
