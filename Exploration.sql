@@ -98,20 +98,22 @@ CREATE TEMPORARY TABLE temp_last_transaction AS
 SELECT temp_bounty.CaseId, temp_bounty.DetectiveId, temp_bounty.SUM(Properties)
 FROM temp_total_bounty temp_bounty
 JOIN (SELECT CaseId, MAX(Time_stamp) AS max_timestamp
-    FROM DetectiveCases
-    WHERE EventType = 'CaseSolved'
-    GROUP BY CaseId) sub 
+      FROM DetectiveCases
+      WHERE EventType = 'CaseSolved'
+      GROUP BY CaseId) sub 
 ON temp_bounty.CaseId = sub.CaseId 
 AND temp_bounty.Total_Bounty > 0;
 
 
 ## Path 3 : Retrieve the top 5 Detective IDs with the highest total bounty on each 'CaseSolved'
+	
 SELECT CaseId, DetectiveId, Total_Bounty
 FROM temp_last_transaction
 ORDER BY Total_Bounty DESC
 LIMIT 5;
 
 ## Path 4 : Dropping the temporary tables
+	
 DROP TABLE IF EXISTS temp_total_bounty;
 DROP TABLE IF EXISTS temp_last_transaction;
 
