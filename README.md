@@ -1,18 +1,25 @@
-# Diving_into_database
-MySQL_Workshop
+![image](https://github.com/AnalyticsForPleasure/Diving_into_database/assets/28948369/5d9b786e-6542-4f78-a838-51e0c14a340b)
+
+
+
+
 
 * [Introduction](#Introduction)
 * [Mystery Question](#Mystery-Question)
-* [Importing data (Answer - Part 1)](#Importing-data-(Answer-Part-1))
-* [Exploration detective mystery (Answer - Part 2)](#Exploration-detective-mystery-(Answer-Part-2))
+* [Part 1 : Importing data](#Part-1-:-Importing-data)
+* [Part 2 : Exploration detective mystery](#Part-2-:-Exploration-detective-mystery)
 
 
 
 
+## Introduction
 
 ## Mystery Question
 
-![image](https://github.com/AnalyticsForPleasure/Diving_into_database/assets/28948369/8fdd1404-2942-4889-9991-51df62281489)
+![image](https://github.com/AnalyticsForPleasure/Diving_into_database/assets/28948369/06c98dec-6295-4e8b-b881-397c19af6732)
 
 
 
+## Part 1 : Importing data
+
+## Part 2 : Exploration detective mystery
