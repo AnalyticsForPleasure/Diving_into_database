@@ -16,14 +16,8 @@
 # CASE_0892368 - First row of 27 rows - case have been close at trasacttion number 16
 # CASE_0892441 - First row of 82 rows - case have been close at trasacttion number 42
 
+# Step Num 1 : extracting the bounty value from the properties in order to count the sum of bounties, filtering rows which satisfied the constraint where EventType = 'CaseOpened'
 
-SELECT Time_stamp , EventType, DetectiveId , CaseId , Properties
-FROM DetectiveCases
-WHERE CaseId = 'CASE_0892441';
-
-
-# Step Num 1 : extracting the bounty value from the properties in order to count the sum of bounties,
-# filtering rows which satisfied the constraint where EventType = 'CaseOpened'
 SELECT  EventType , CaseId , JSON_EXTRACT(Properties, '$.Bounty') AS bounty_value
 FROM DetectiveCases
 WHERE EventType = 'CaseOpened';
@@ -41,46 +35,65 @@ SELECT  EventType , CaseId , JSON_EXTRACT(Properties, '$.Bounty') AS bounty_valu
 FROM DetectiveCases
 WHERE EventType = 'CaseOpened';
 
+Select *
+from temp_table_for_bounty;
+
+
 ## Step Num 4 : Create a temporary table named 'temp_table_for_case_solved'
 CREATE TEMPORARY TABLE temp_table_for_case_solved AS
-Select EventType,  CaseId , DetectiveId
-from DetectiveCases
-WHERE EventType = 'CaseSolved';
+SELECT MIN(Time_stamp) AS first_CaseSolved, CaseId
+FROM DetectiveCases
+WHERE EventType = 'CaseSolved'
+GROUP BY CaseId ;
+
+Select *
+from temp_table_for_case_solved;
+
+
+## Step Num 5 : Creating a temporary table named - temp_table_case_solved_by_first_Detec ( with 3 fields : first_appearance , CaseId , DetectiveId )
+
+CREATE TEMPORARY TABLE temp_table_case_solved_by_first_Detec AS
+SELECT DetectiveCases.Time_stamp AS first_appearance, DetectiveCases.CaseId, DetectiveCases.DetectiveId
+FROM   DetectiveCases
+INNER JOIN temp_table_for_case_solved ON DetectiveCases.CaseId = temp_table_for_case_solved.CaseId
+AND DetectiveCases.Time_stamp = temp_table_for_case_solved.first_CaseSolved;
+           
+select *
+from temp_table_case_solved_by_first_Detec;
+
+## Step Num 6 : applying an inner join between the 2 temporary tables + I added the "order by" in order to see the number of bounties each Detective have
+
+Select temp_table_case_solved_by_first_Detec.DetectiveId , temp_table_case_solved_by_first_Detec.CaseId ,  temp_table_for_bounty.bounty_value
+from temp_table_for_bounty
+inner join temp_table_case_solved_by_first_Detec
+On temp_table_for_bounty.CaseId = temp_table_case_solved_by_first_Detec.CaseId
+ORDER BY temp_table_case_solved_by_first_Detec.DetectiveId;
+
+
+
+## Step Num 7 : adding a inner join between the 2 temporary tables + I added the order by in order to see the number of bounties each Detective have + adding at the end a new temporary table
+
+CREATE TEMPORARY TABLE temp_table_solve_cases_with_bounty_values AS
+Select temp_table_case_solved_by_first_Detec.DetectiveId , temp_table_case_solved_by_first_Detec.CaseId ,  temp_table_for_bounty.bounty_value
+from temp_table_for_bounty
+inner join temp_table_case_solved_by_first_Detec
+On temp_table_for_bounty.CaseId = temp_table_case_solved_by_first_Detec.CaseId
+ORDER BY temp_table_case_solved_by_first_Detec.DetectiveId;
+
 
 select *
-from temp_table_for_detective;
+from temp_table_solve_cases_with_bounty_values;
 
 
-## Step Num 5 : applying an inner join between the 2 temporary tables + I added the order by in order to see the number of bounties each Detective have
-
-Select temp_table_for_case_solved.DetectiveId , temp_table_for_case_solved.CaseId ,  temp_table_for_bounty.bounty_value
-from temp_table_for_bounty
-inner join temp_table_for_case_solved
-On temp_table_for_bounty.CaseId = temp_table_for_case_solved.CaseId
-ORDER BY temp_table_for_case_solved.DetectiveId;
-
-
-## Step Num 6 : adding a inner join between the 2 temporary tables + I added the order by in order to see the number of bounties each Detective have + adding at the end a new temporary table
-CREATE TEMPORARY TABLE temp_table_solve_cases_with_bounty_values AS
-Select temp_table_for_case_solved.DetectiveId , temp_table_for_case_solved.CaseId ,  temp_table_for_bounty.bounty_value
-from temp_table_for_bounty
-inner join temp_table_for_case_solved
-On temp_table_for_bounty.CaseId = temp_table_for_case_solved.CaseId
-ORDER BY temp_table_for_case_solved.DetectiveId;
-
-
-## Step Num 7 : applying group by + order by - for see the bounties by using aggregation sum function
+## Step Num 8 : applying group by + order by - for see the bounties by using aggregation sum function
 select Detectiveid , sum(bounty_value) As sum_bounties_for_each_detective
 from temp_table_solve_cases_with_bounty_values
 group by Detectiveid
 order by sum_bounties_for_each_detective desc;
 
-## 'kvc30895a517379801a06e'
-
-##  'kvc232d2114ea87576155e'
 
 
 ## Step Num 8 : Dropping the temporary tables
 DROP TABLE IF EXISTS temp_table_for_bounty;
-DROP TABLE IF EXISTS temp_table_for_case_solved;
-DROP TABLE IF EXISTS temp_table_finally_merge;
+DROP TABLE IF EXISTS temp_table_case_solved_by_first_Detec;
+DROP TABLE IF EXISTS temp_table_solve_cases_with_bounty_values;
