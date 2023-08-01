@@ -35,10 +35,16 @@ Time_stamp datetime,
     Properties json
 );
 
+select count(*)
+from DetectiveCases;
 
 # Works well:
 # replace "" to {}
-LOAD DATA INFILE '/var/lib/mysql-files/log_00002_new.csv'
+-- Here below I am adding and dumping the 3 csv files into the DetectiveCases table: 
+#LOAD DATA INFILE '/var/lib/mysql-files/log_00000_new.csv'
+#LOAD DATA INFILE '/var/lib/mysql-files/log_00001_new.csv'
+LOAD DATA INFILE '/var/lib/mysql-files/log_00002_new.csv' 
+
 INTO TABLE DetectiveCases
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
@@ -46,6 +52,23 @@ LINES TERMINATED BY '\n'
 (Time_stamp, EventType,DetectiveId, CaseId, @Properties)
 SET Properties = JSON_SET('{}', '$.Bounty', JSON_EXTRACT(@Properties, '$.Bounty'));
 
+# Dumping the entire data into a one table  
+SELECT time_stamp, EventType, DetectiveId , CaseId , Properties FROM og_00002_new.csv
+UNION ALL
+SELECT time_stamp, EventType, DetectiveId , CaseId , Properties FROM og_00002_new.csv
+UNION ALL
+SELECT time_stamp, EventType, DetectiveId , CaseId , Properties FROM og_00002_new.csv;
 
-select * from DetectiveCases
-limit 500;
+
+
+select count(*)
+from DetectiveCases
+limit 5000;
+
+
+
+-- SELECT JSON_EXTRACT(Properties, '$.Bounty') AS bounty_value
+-- FROM DetectiveCases;
+
+
+###############################################################################################
