@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-
+# In this function we removed the curly brakets from the value number.
 def get_bounty(input_str):
     res = input_str.split(':')[1]
     res = int(res[:-1])
@@ -13,29 +13,36 @@ if __name__ == '__main__':
     pd.set_option('display.max_columns', 500)  # To see all columns
     pd.set_option('display.width', 1000)
 
-    df = pd.read_csv(r"data\all_log.csv", header=None)
+    df = pd.read_csv(r"data/log_all.csv", header=None)
     df.columns = ["date", "case_status", "detective_id", "case_id", "bounty_dict"]
-    df['date'] = pd.to_datetime(df['date'])
+    df['date'] = pd.to_datetime(df['date']) # Changing the column named 'date' format from DatetimeArray to differnt format using to_datetime in pandas
+    print('*')
 
-    # print(df.iloc[:50, :])
+    #print(df.iloc[:50, :])
 
     print(np.unique(df["case_status"]))
 
+    # First step - Dealing with the bounty_table
     all_case_opened = df.loc[df["case_status"] == "CaseOpened", :]
-    all_case_opened["bounty"] = all_case_opened["bounty_dict"].apply(lambda x: get_bounty(x))
+    all_case_opened["bounty"] = all_case_opened["bounty_dict"].apply(lambda x: get_bounty(x)) # adding another column by removing the curly brakets.
     all_case_opened.reset_index(drop=True, inplace=True)
+    print('*')
 
+    # Second step - Dealing with the detective_table
     all_case_solved = df.loc[df["case_status"] == "CaseSolved", :]
     all_case_solved.reset_index(drop=True, inplace=True)
-    all_case_solved.drop("bounty_dict", axis=1, inplace=True)
+    all_case_solved.drop("bounty_dict", axis=1, inplace=True) # Removing the 'bounty_dict' column
     all_case_solved.sort_values(by=["date", "detective_id"], ascending=[True, True])
 
+    # the row below is a important row which we used the groupby & first together - The 'first()' returns the first row of each group.
+    # The row with the smallest index within each group. This essentially extracts the earliest record for each unique 'case_id'.
     solved_first = all_case_solved.groupby('case_id').first().reset_index()
 
-    # inner join
+
+    # Inner join
     res_df = pd.merge(all_case_opened, solved_first, on='case_id', how='inner')
 
-    solved_first = res_df.groupby('detective_id_y')['bounty'].agg('sum').reset_index()
+    solved_first = res_df.groupby('detective_id_y')['bounty'].agg('sum').reset_index() # after joining the two tables we have the same column names with X and Y
     solved_first.sort_values(['bounty'], ascending=False, inplace=True)
     print("#" * 50)
     print(f'{solved_first.iloc[0, :]}')
