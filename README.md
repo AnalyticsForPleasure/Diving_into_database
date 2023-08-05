@@ -12,12 +12,17 @@
 
 
 ## Introduction
+
 Welcome to the intriguing world of mystery detective practice, where the art of **solving crimes merges with the power of data analysis**. 
 
-In this captivating journey, you will explore the fusion of detective work and the MySQL database, unraveling mysteries through the lens of structured query language (SQL). 
-As a mystery detective,I mission is to crack complex cases, piece together clues, and identify culprits. However, in today's digital age, the vast amount of information can be overwhelming. That's where MySQL comes in, **serving as your trusty partner in organizing and analyzing data** to uncover hidden connections and patterns.By practicing with MySQL, I learned to store and manage investigative data efficiently.
+In this captivating journey, I will explore the fusion of detective work with MySQL operations, unraveling mysteries through the lens of structured query language (SQL). 
 
-With SQL queries, I will extract relevant data, cross-reference evidence, and identify leads that can bring you closer to solving the case.
+As a mystery detective,My mission is to crack complex cases, glue together clues, and identify culprits. 
+In today's digital age, the vast amount of information can be overwhelming. That's where MySQL comes in, **serving as your trusty partner in organizing and analyzing data** to uncover hidden connections and patterns.
+
+Using MySQL I have stored and  investigated data.
+
+I'll be extracting relevant data, cross-reference evidence, and identify leads that can bring you closer to solving the case.
 
 
 ## Mystery Question
@@ -32,7 +37,14 @@ Here is the question :
 <img width="800" src="images/question_Kusto_part2.png" title="bla">
 </p>
 
+Here is the KQL query for creating the relevant tables:
 
+
+<p align="center">
+<img width="800" src="images/download_files.png" title="bla">
+</p>
+
+I have downloaded the files and solved the mystery in both Mysql and Python approaches:
 
 ## Answer
 ### Part 1 : Importing data
