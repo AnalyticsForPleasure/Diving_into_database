@@ -1,5 +1,5 @@
 <p align="center">
-<img width="980" src="images/MySQL/Mysql_logo_readme.png" title="bla">
+<img width="980" src="images/Mysql_logo_readme.png" title="bla">
 </p>
 
 - [Introduction](#introduction)
@@ -23,13 +23,13 @@ With SQL queries, I will extract relevant data, cross-reference evidence, and id
 ## Mystery Question
 
 <p align="center">
-<img width="800" src="images/MySQL/question_Kusto.png" title="bla">
+<img width="800" src="images/question_Kusto.png" title="bla">
 </p>
 
 Here is the question : 
 
 <p align="center">
-<img width="800" src="images/MySQL/question_Kusto_part2.png" title="bla">
+<img width="800" src="images/question_Kusto_part2.png" title="bla">
 </p>
 
 
