@@ -15,6 +15,7 @@ if __name__ == '__main__':
     consumption_df.columns = ['Timestamp','HouseholdId','MeterType','Consumed']
     consumption_df['Consumed'] = consumption_df['Consumed'].astype(float)
     consumption_df['Timestamp'] = pd.to_datetime(consumption_df['Timestamp'])
+
     print('*')
     # Dealing with the second table of the detective kusto challenge:
     cost_df = pd.DataFrame(data = [['Water','Liter',0.001562],
@@ -41,4 +42,12 @@ if __name__ == '__main__':
     specific_bills_for_household_2 = consumption_df.loc[consumption_df['HouseholdId'] == 'DTI6F2EB46AD6AE2597', :]
     specific_bills_for_household_times = specific_bills_for_household.shape[0] # This specific household pays 30 over the month of april 30 times a bill
                                                                                # for Electricity & Water.
+    print('*')
+
+    # Let's merge between the 2 dataframe:
+    merged_df = consumption_df.merge(cost_df, on='MeterType')
+    print('*')
+
+    # Adding the "Total cost" column
+    merged_df['TotalCost'] = merged_df['Consumed'] * merged_df['Cost']
     print('*')
