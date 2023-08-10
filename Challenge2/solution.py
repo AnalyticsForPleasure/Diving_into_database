@@ -33,7 +33,8 @@ if __name__ == '__main__':
     print('*')
 
 
-    # Working on the "consumption_df" dataset:
+# Working on the "consumption_df" dataset:
+
     # Let's find out how many household we have on the dataset
     res = pd.unique(consumption_df['HouseholdId'])
     number_of_HouseholdId = res.shape[0] # 126,185 households
@@ -42,16 +43,6 @@ if __name__ == '__main__':
     counting_number_of_each_household = consumption_df['HouseholdId'].value_counts() # We have a range of households between 60 to 103
     print('*')
 
-    # Let's find the average consumption for each household in the df:
-    consumption_df.groupby(['MeterType'])['Consumed'].sum() # ['MeterType', 'Consumed'].sum()
-    aggregate_result = consumption_df.groupby(['HouseholdId', 'MeterType'])['Consumed'].agg(['mean', 'sum']).head(20)
-    print('*')
-
-    specific_bills_for_household = consumption_df.loc[consumption_df['HouseholdId'] == 'DTI624E9689E1F73D62', :]
-    specific_bills_for_household_2 = consumption_df.loc[consumption_df['HouseholdId'] == 'DTI6F2EB46AD6AE2597', :]
-    specific_bills_for_household_times = specific_bills_for_household.shape[0] # This specific household pays 30 over the month of april 30 times a bill
-                                                                               # for Electricity & Water.
-    print('*')
 
     #Let's merge between the 2 dataframe:
     merged_df = consumption_df.merge(cost_df, on='MeterType')
@@ -62,34 +53,40 @@ if __name__ == '__main__':
     print('*')
     # Display the final DataFrame
     print(merged_df)
-
-    # Let's calculate the "totalcost" of the entire column ( All meterType together )
-    sum_of_total_cost =merged_df['TotalCost'].sum()
     print('*')
 
-    # Let's now calculate the "totalcost" of the entire column by separating the category between 'Electricity' vs 'Water':
+    # As we can see from the next 3 rows - we are dealing with duplicates: 7,617,835 --> 7,571,244
+    number_of_row_before_remove_duplicate =merged_df.shape[0]
+    row_after_remove_duplicate = merged_df.drop_duplicates()
+    number_of_row_after_remove_duplicate = row_after_remove_duplicate.shape[0]
+    print('*')
 
-    separating_the_costs = merged_df.groupby(['MeterType'])['TotalCost'].agg(['sum'])
+    # Get all the negative numbers from the 'column_name' column:
+    #negative_numbers = row_after_remove_duplicate[row_after_remove_duplicate['Consumed'] < 0]['Consumed']
+
+    # Here below we are dealing with negative numbers: 7,571,244--> 7,571,100
+    clean_data = row_after_remove_duplicate[row_after_remove_duplicate['Consumed'] >= 0]
+    print('*')
+
+
+    # Getting the max value of the 'Consumed' column for 'Water' and 'Electricity' for each  HouseholdId:
+    #aggregate_result_max = clean_data.groupby(['Timestamp','HouseholdId', 'MeterType'])['Consumed'].agg(['max'])
+    #aggregate_result_max = aggregate_result_max.drop_duplicates()
+    #summing_the_all_max_values_of_consumed = aggregate_result_max['max'].sum()
     print('*')
 
     # My logic thinking here is once a day each households pays 2 bills for the same property: 1) Water 2) electricity.
-    # Therefore, we need to check out the households how  many times each household pays once a day a bill. if he is
-    # paying more than twice, it doesn't make any sense. ( using Hint number 1 + 3 ) 
-    
-    counter_payments_for_each_household = consumption_df.groupby(['HouseholdId', 'Timestamp'])['Consumed'].agg(['count']) # Using grouping in order to create a counter for finding the number of bills payed each day.
-    counter_payments_for_each_household_sorted = counter_payments_for_each_household.sort_values(by=['count'], ascending=[False]) # As we can see there are many rows more than 2 payments a day. #TODO continue from here
+    # Therefore, we need to check out the households - how  many times each household pays once a day a bill. if he is
+    # paying more than twice,  I should discarded.
+
+    counter_payments_for_each_household = clean_data.groupby(['HouseholdId', 'Timestamp'])['Consumed'].agg(['count'])  # Using grouping in order to create a counter for finding the number of bills payed each day.
+    counter_payments_for_each_household_sorted = counter_payments_for_each_household.sort_values(by=['count'],ascending=[False])  # As we can see there are many rows more than 2 payments a day. 
+    # specific_bills_for_household_1 = specific_bills_for_household_1.
     print('*')
 
-    # Number of payment each day during the april month:
-    counting_number_of_payments_each_day_over_the_month = merged_df['Timestamp'].value_counts()
-    print('*')
 
-    merged_df
-    # In the next line I want to calculate the sum of water and electricity for each household in each day of April month
-    result = merged_df.groupby(['MeterType','HouseholdId', 'Timestamp'])['TotalCost'].agg(['sum'])
+    # Getting the max value of the 'Consumed' column for 'Water' and 'Electricity' for each  HouseholdId:
+    aggregate_result_max = clean_data.groupby(['Timestamp', 'HouseholdId', 'MeterType'])['Consumed'].agg(['max'])
+    summing_the_all_max_values_of_consumed = aggregate_result_max['max'].sum()
     print('*')
-
-    sorted_result = result.sort_values(by=["MeterType", "Timestamp"], ascending=[True, True])
-    print('*')
-
-    #solved_first = all_case_solved.groupby('case_id').first().reset_index()
+    # https://stackoverflow.com/questions/64721116/pandas-fastest-way-to-group-by-max-and-summing-over-the-group
