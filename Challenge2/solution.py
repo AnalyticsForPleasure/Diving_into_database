@@ -55,6 +55,10 @@ if __name__ == '__main__':
     print(merged_df)
     print('*')
 
+    counter_payments_for_each_household = merged_df.groupby(['Timestamp','HouseholdId','MeterType' ])['Consumed'].agg(['count'])
+    counter_payments_for_each_household['count'].value_counts() # Number of time returning 2,3,4
+    print('*')
+
     # As we can see from the next 3 rows - we are dealing with duplicates: 7,617,835 --> 7,571,244
     number_of_row_before_remove_duplicate =merged_df.shape[0]
     row_after_remove_duplicate = merged_df.drop_duplicates()
@@ -68,6 +72,11 @@ if __name__ == '__main__':
     clean_data = row_after_remove_duplicate[row_after_remove_duplicate['Consumed'] >= 0]
     print('*')
 
+    # Finding the max values for Water and electricity - The highest values
+    # 'Electricity':   51.58441562643816
+    # 'Water':         1138.6286381493717
+    max_values = row_after_remove_duplicate.groupby('MeterType')['Consumed'].max().to_dict()
+    print('*')
 
     # Getting the max value of the 'Consumed' column for 'Water' and 'Electricity' for each  HouseholdId:
     #aggregate_result_max = clean_data.groupby(['Timestamp','HouseholdId', 'MeterType'])['Consumed'].agg(['max'])
@@ -80,7 +89,8 @@ if __name__ == '__main__':
     # paying more than twice,  I should discarded.
 
     counter_payments_for_each_household = clean_data.groupby(['HouseholdId', 'Timestamp'])['Consumed'].agg(['count'])  # Using grouping in order to create a counter for finding the number of bills payed each day.
-    counter_payments_for_each_household_sorted = counter_payments_for_each_household.sort_values(by=['count'],ascending=[False])  # As we can see there are many rows more than 2 payments a day. 
+    counter_payments_for_each_household_sorted = counter_payments_for_each_household.sort_values(by=['count'],ascending=[False])  # As we can see there are many rows more than 2 payments a day.
+    counter_payments_for_each_household_sorted.sort_values(by=["count"], ascending=False,inplace=True)
     # specific_bills_for_household_1 = specific_bills_for_household_1.
     print('*')
 
@@ -90,3 +100,5 @@ if __name__ == '__main__':
     summing_the_all_max_values_of_consumed = aggregate_result_max['max'].sum()
     print('*')
     # https://stackoverflow.com/questions/64721116/pandas-fastest-way-to-group-by-max-and-summing-over-the-group
+
+
