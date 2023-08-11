@@ -43,9 +43,11 @@ if __name__ == '__main__':
     counting_number_of_each_household = consumption_df['HouseholdId'].value_counts() # We have a range of households between 60 to 103
     print('*')
 
-
+    # Removing duplicates rows by 3 elements : 'Timestamp', 'HouseholdId', 'MeterType'
+    consumption_df_after_removing_dup= consumption_df.drop_duplicates(subset=['Timestamp', 'HouseholdId', 'MeterType'])# 126185*30*2 = 7,5571,100 number of rows
+    print('*')
     #Let's merge between the 2 dataframe:
-    merged_df = consumption_df.merge(cost_df, on='MeterType')
+    merged_df = consumption_df_after_removing_dup.merge(cost_df, on='MeterType')
     print('*')
 
     # Perform the multiplication
@@ -59,23 +61,18 @@ if __name__ == '__main__':
     counter_payments_for_each_household['count'].value_counts() # Number of time returning 2,3,4
     print('*')
 
-    # As we can see from the next 3 rows - we are dealing with duplicates: 7,617,835 --> 7,571,244
-    number_of_row_before_remove_duplicate =merged_df.shape[0]
-    row_after_remove_duplicate = merged_df.drop_duplicates()
-    number_of_row_after_remove_duplicate = row_after_remove_duplicate.shape[0]
+    # Here below we are dealing with negative numbers: 7,571,100  --> 7,571,035
+    clean_data = merged_df[merged_df['Consumed'] >= 0]
+    clean_data = merged_df[merged_df['Consumed'] >= 0]
     print('*')
 
-    # Get all the negative numbers from the 'column_name' column:
-    #negative_numbers = row_after_remove_duplicate[row_after_remove_duplicate['Consumed'] < 0]['Consumed']
+    # Finding the max values for Water and electricity -
+    # The Max values                                   The Min Values
+    # 'Electricity':   51.58441562643816              Electricity: 5.086221949904923,
+    # 'Water':         1138.6286381493717             Water :      84.26381414444128
 
-    # Here below we are dealing with negative numbers: 7,571,244--> 7,571,100
-    clean_data = row_after_remove_duplicate[row_after_remove_duplicate['Consumed'] >= 0]
-    print('*')
-
-    # Finding the max values for Water and electricity - The highest values
-    # 'Electricity':   51.58441562643816
-    # 'Water':         1138.6286381493717
-    max_values = row_after_remove_duplicate.groupby('MeterType')['Consumed'].max().to_dict()
+    max_values = clean_data.groupby('MeterType')['Consumed'].max().to_dict()
+    min_values = clean_data.groupby('MeterType')['Consumed'].min().to_dict()
     print('*')
 
     # Getting the max value of the 'Consumed' column for 'Water' and 'Electricity' for each  HouseholdId:
@@ -100,5 +97,6 @@ if __name__ == '__main__':
     summing_the_all_max_values_of_consumed = aggregate_result_max['max'].sum()
     print('*')
     # https://stackoverflow.com/questions/64721116/pandas-fastest-way-to-group-by-max-and-summing-over-the-group
+
 
 
