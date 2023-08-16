@@ -46,3 +46,12 @@ from consumption_df;
 
 select *
 from cost_df;
+
+
+-- check why it's not working here below : 
+LOAD DATA INFILE '/var/lib/mysql-files/log_00002_new.csv'
+INTO TABLE consumption_df
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+(Time_stamp, EventType , HouseholdId , Consumed )
